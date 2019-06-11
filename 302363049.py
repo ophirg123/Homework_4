@@ -42,7 +42,6 @@ class HydroCamel(auv_interface.Auv):
             self.B_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
             self.C_y = self.A_y + self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
             self.C_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
-
         self.create_sonar_fov(self.A_x,self.A_y,self.B_x,self.B_y,self.C_x,self.C_y)
         self.mine_check()
 
