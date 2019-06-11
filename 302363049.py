@@ -30,14 +30,19 @@ class HydroCamel(auv_interface.Auv):
         self.sonar_fov_dictionary = {}
         self.founded_mines = []
         self.auv_angle = 0
-
-
         self.A_y = float(self.initial_position[0])
         self.A_x = float(self.initial_position[1])
-        self.B_y = self.A_y - self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
-        self.B_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
-        self.C_y = self.A_y + self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
-        self.C_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
+        if self.sonar_angle == 45:
+            self.B_y = self.A_y - self.sonar_range * np.sin((self.sonar_angle + 0.0000000000001) * np.pi / 180)
+            self.B_x = self.A_x + self.sonar_range * np.cos((self.sonar_angle + 0.0000000000001) * np.pi / 180)
+            self.C_y = self.A_y + self.sonar_range * np.sin((self.sonar_angle + 0.0000000000001) * np.pi / 180)
+            self.C_x = self.A_x + self.sonar_range * np.cos((self.sonar_angle + 0.0000000000001) * np.pi / 180)
+        else:
+            self.B_y = self.A_y - self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
+            self.B_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
+            self.C_y = self.A_y + self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
+            self.C_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
+
         self.create_sonar_fov(self.A_x,self.A_y,self.B_x,self.B_y,self.C_x,self.C_y)
         self.mine_check()
 
@@ -263,7 +268,7 @@ if __name__ == "__main__":
     # print(game1.get_sonar_fov())
     #
      # example 2
-    sonar_range = 9
+    sonar_range = 6
     sonar_angle = 45
     map_size = (25, 20)
     initial_position = (10, 10)
