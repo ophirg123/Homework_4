@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class HydroCamel(auv_interface.Auv):
     '''
-    This is an mine's sonar scanner for AUV
+    This is a mine's sonar scanner for AUV
 
     Attributes:
         sonar_range (int): The range of the sonar
@@ -18,8 +18,8 @@ class HydroCamel(auv_interface.Auv):
         A_x, A_y .... (int): Value of each component at the triangle for calculating point in polygon.
     '''
     def __init__(self, _sonar_range, _sonar_angle, _map_size, _initial_position, _velocity, _duration, _mines_map):
-        self.sonar_range = _sonar_range
-        self.sonar_angle = _sonar_angle
+        self.sonar_range = _sonar_range + 1.74*(10**(-11))
+        self.sonar_angle = _sonar_angle + 1.74*(10**(-13))
         self.map_size = _map_size
         self.initial_position = _initial_position
         self.velocity = _velocity
@@ -32,16 +32,10 @@ class HydroCamel(auv_interface.Auv):
         self.auv_angle = 0
         self.A_y = float(self.initial_position[0])
         self.A_x = float(self.initial_position[1])
-        if self.sonar_angle == 45:
-            self.B_y = self.A_y - self.sonar_range * np.sin((self.sonar_angle + 0.0000000000001) * np.pi / 180)
-            self.B_x = self.A_x + self.sonar_range * np.cos((self.sonar_angle + 0.0000000000001) * np.pi / 180)
-            self.C_y = self.A_y + self.sonar_range * np.sin((self.sonar_angle + 0.0000000000001) * np.pi / 180)
-            self.C_x = self.A_x + self.sonar_range * np.cos((self.sonar_angle + 0.0000000000001) * np.pi / 180)
-        else:
-            self.B_y = self.A_y - self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
-            self.B_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
-            self.C_y = self.A_y + self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
-            self.C_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
+        self.B_y = self.A_y - self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
+        self.B_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
+        self.C_y = self.A_y + self.sonar_range * np.sin(self.sonar_angle * np.pi / 180)
+        self.C_x = self.A_x + self.sonar_range * np.cos(self.sonar_angle * np.pi / 180)
         self.create_sonar_fov(self.A_x,self.A_y,self.B_x,self.B_y,self.C_x,self.C_y)
         self.mine_check()
 
@@ -80,17 +74,19 @@ class HydroCamel(auv_interface.Auv):
 
         self.map[int(self.A_y), int(self.A_x)] = 4
 
-        plt.figure(figsize=(20, 18))
+        ##plt.figure(figsize=(20, 18))
         # import matplotlib as mpl
         # colors = ['black', 'blue', 'magenta', 'red', 'turquoise', 'purple']
         # bounds = [0, 1, 2, 3, 4, 5, 6]
         # cmap = mpl.colors.ListedColormap(colors)
         # norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
         # self.im = plt.imshow(self.map, interpolation='none', cmap=cmap, norm=norm)
-        self.im = plt.imshow(self.map, interpolation='none')
-        plt.show(block=False)
-        plt.pause(1)
-        plt.close()
+        plt.ion()
+        self.im = plt.imshow(self.map)#, #interpolation='none')
+        self.im.set_data(self.map)
+        #plt.show(block=False)
+        plt.pause(0.5)
+        #plt.close()
 
         self.map = self.map * 0
 
@@ -233,44 +229,43 @@ class HydroCamel(auv_interface.Auv):
         until the duration list is empty and there is no more movement to do'''
         while len(self.duration) > 0:
             self.time_step()
-            self.display_map()
-
 
 if __name__ == "__main__":
 
     # # example 1
-    # map_size = (20, 15)
-    # mines = np.zeros(map_size).tolist()
-    # mines[16][6] = 1
-    # mines[15][6] = 1
-    # mines[12][6] = 1
-    # mines[12][4] = 1
-    # mines[14][10] = 1
-    # mines[17][11] = 1
-    # mines[18][11] = 1
-    # mines[14][11] = 1
-    # velocity = list()
-    # velocity.append([0, 1])
-    # sonar_range = 6
-    # sonar_angle = 60
-    # initial_position = (14, 1)
-    # duration = [8]
-    #
-    # game1 = HydroCamel(sonar_range, sonar_angle, map_size, initial_position, velocity, duration, mines)
-    # game1.display_map()
-    # # print(game1.get_mines())
-    # # print(game1.auv_angle)
-    # for i in range(0, 7):
-    #     game1.time_step()
-    #     game1.display_map()
+    map_size = (20, 15)
+    mines = np.zeros(map_size).tolist()
+    mines[16][6] = 1
+    mines[15][6] = 1
+    mines[12][6] = 1
+    mines[12][4] = 1
+    mines[14][10] = 1
+    mines[17][11] = 1
+    mines[18][11] = 1
+    mines[14][11] = 1
+    velocity = list()
+    velocity.append([0, 1])
+    sonar_range = 6
+    sonar_angle = 60
+    initial_position = (14, 1)
+    duration = [8]
+
+    game1 = HydroCamel(sonar_range, sonar_angle, map_size, initial_position, velocity, duration, mines)
+    help(HydroCamel)
+    game1.display_map()
     # print(game1.get_mines())
-    # print(game1.get_sonar_fov())
+    # print(game1.auv_angle)
+    for i in range(0, 7):
+        game1.time_step()
+        game1.display_map()
+    print(game1.get_mines())
+    print(game1.get_sonar_fov())
     #
      # example 2
-    sonar_range = 6
-    sonar_angle = 45
-    map_size = (25, 20)
-    initial_position = (10, 10)
+    sonar_range = 60
+    sonar_angle = 75
+    map_size = (100, 100)
+    initial_position = (50, 50)
     velocity = list()
     velocity.append([2, 2])
     velocity.append([-2, -2])
@@ -281,8 +276,8 @@ if __name__ == "__main__":
 
     game2 = HydroCamel(sonar_range, sonar_angle, map_size, initial_position, velocity, duration, mines)
     game2.start()
-    # game2.set_course(([-2, -2],[-2, 2],[-2, -2],[2, -2]), [1, 1, 1, 1])
-    # game2.start()
+    game2.set_course(([-2, -2],[-2, 2],[-2, -2],[2, -2]), [1, 1, 1, 1])
+    game2.start()
     print(game2.get_mines())
     print(game2.get_sonar_fov())
 
